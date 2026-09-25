@@ -156,7 +156,7 @@
     <div class="section-label"><i class="ti ti-target" aria-hidden="true"></i> Universo e metas (ciclo anterior)</div>
     <div class="meta-grid">
       <div class="meta-item"><label>Total administrativos</label><input type="number" id="totalAdmin" value="109"></div>
-      <div class="meta-item"><label>Meta administrativos %</label><input type="number" id="metaAdmin" value="82.4" step="0.1"></div>
+      <div class="meta-item"><label>Meta administrativos %</label><input type="number" id="metaAdmin" value="82.9" step="0.1"></div>
       <div class="meta-item"><label>Total docentes</label><input type="number" id="totalDocente" value="100"></div>
       <div class="meta-item"><label>Meta docentes %</label><input type="number" id="metaDocente" value="91.5" step="0.1"></div>
       <div class="meta-item"><label>Total discentes (2026/2)</label><input type="number" id="totalDiscente" value="2390" readonly></div>
@@ -270,6 +270,13 @@ function getMetas() {
 }
 
 function getMatriculados(curso) {
+  // usa total dinâmico da base se disponível
+  if (snap && snap.totalByCurso) {
+    const norm = s => s.trim().toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,'').replace(/\s+/g,' ');
+    const key = Object.keys(snap.totalByCurso).find(k => norm(k) === norm(curso));
+    if (key) return snap.totalByCurso[key];
+  }
+  // fallback para o dicionário fixo
   const norm = s => s.trim().toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,'').replace(/\s+/g,' ');
   const key = Object.keys(MAT).find(k => norm(k) === norm(curso));
   return key ? MAT[key] : 0;
@@ -291,7 +298,8 @@ function clearSnaps() {
 
 async function fetchFile(path) {
   try {
-    const res = await fetch(path + '?v=' + Date.now());
+    const url = path + '?nocache=' + Date.now() + Math.random();
+    const res = await fetch(url, { cache: 'no-store' });
     if (!res.ok) return null;
     const ext = path.split('.').pop().toLowerCase();
     const buf = await res.arrayBuffer();
@@ -304,12 +312,12 @@ async function fetchFile(path) {
         .map(r => { const o={}; fields.forEach((f,i) => o[f] = r[i]!=null ? String(r[i]).trim() : ''); return o; });
       return { data, fields };
     } else {
-      const txt = new TextDecoder('utf-8').decode(buf);
-      const p = Papa.parse(txt, { header:true, skipEmptyLines:true, delimiter:';' });
-      if (!p.meta.fields || p.meta.fields.length <= 1) {
-        const p2 = Papa.parse(txt, { header:true, skipEmptyLines:true });
-        return { data: p2.data, fields: p2.meta.fields || [] };
-      }
+      // tenta UTF-8 primeiro (GitHub converte), fallback windows-1252
+      let txt = new TextDecoder('utf-8').decode(buf);
+      if (/\uFFFD/.test(txt.slice(0,500))) txt = new TextDecoder('windows-1252').decode(buf);
+      let p = Papa.parse(txt, { header:true, skipEmptyLines:true, delimiter:';' });
+      if (!p.meta.fields || p.meta.fields.length <= 1)
+        p = Papa.parse(txt, { header:true, skipEmptyLines:true });
       return { data: p.data, fields: p.meta.fields || [] };
     }
   } catch(e) { return null; }
@@ -351,7 +359,7 @@ async function loadAll() {
   document.getElementById('reloadIcon').className = 'ti ti-loader-2';
   setStatus('Carregando arquivos...');
   const today = new Date().toISOString().slice(0,10);
-  const newSnap = { date:today, admin:0, docente:0, discente:0, docByCurso:{}, disByCurso:{} };
+  const newSnap = { date:today, admin:0, docente:0, discente:0, docByCurso:{}, disByCurso:{}, totalByCurso:{} };
   let loaded = 0, errors = [];
 
   await Promise.allSettled([
@@ -363,8 +371,8 @@ async function loadAll() {
     fetchFile('dados/docente.csv').then(r => {
       if (!r) { errors.push('docente'); return; }
       const idCol     = findCol(r.fields,'AVALIADOR') || r.fields[6];
-      const statusCol = findCol(r.fields,'STATUS')    || r.fields[12];
-      const cursoCol  = findCol(r.fields,'CURSO')     || null;
+      const statusCol = findCol(r.fields,'STATUS')    || r.fields[13];
+      const cursoCol  = findCol(r.fields,'CURSO')     || r.fields[7];
       const filtered  = r.data.filter(row => isRespondeu(row[statusCol]));
       newSnap.docente    = countUniq(filtered, idCol);
       newSnap.docByCurso = cursoCol ? groupByCurso(filtered, idCol, cursoCol) : {};
@@ -375,9 +383,16 @@ async function loadAll() {
       const idCol     = findCol(r.fields,'AVALIADOR') || r.fields[8];
       const cursoCol  = findCol(r.fields,'CURSO')     || r.fields[10];
       const statusCol = findCol(r.fields,'STATUS')    || r.fields[16];
+      // total por curso = todos os avaliadores únicos (com e sem resposta)
+      if (cursoCol) newSnap.totalByCurso = groupByCurso(r.data, idCol, cursoCol);
       const filtered  = r.data.filter(row => isRespondeu(row[statusCol]));
       newSnap.discente   = countUniq(filtered, idCol);
       newSnap.disByCurso = cursoCol ? groupByCurso(filtered, idCol, cursoCol) : {};
+      // total geral de discentes = soma dos únicos por curso
+      if (newSnap.totalByCurso) {
+        const totalDinamico = Object.values(newSnap.totalByCurso).reduce((a,b)=>a+b,0);
+        if (totalDinamico > 0) document.getElementById('totalDiscente').value = totalDinamico;
+      }
       loaded++;
     }),
   ]);
