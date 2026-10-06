@@ -1,199 +1,196 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>CPA — Painel de Participação | UniCatólica</title>
-  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@2.44.0/tabler-icons.min.css">
-  <style>
-    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-    :root {
-      --bg1: #ffffff; --bg2: #f4f4f2; --bg3: #eeecea;
-      --tx1: #1a1a18; --tx2: #5f5e5a;
-      --bd1: rgba(0,0,0,0.13); --bd2: rgba(0,0,0,0.28);
-      --rmd: 8px; --rlg: 12px;
-      --font: system-ui, -apple-system, sans-serif;
-    }
-    @media (prefers-color-scheme: dark) {
-      :root {
-        --bg1: #1e1e1c; --bg2: #2a2a28; --bg3: #111110;
-        --tx1: #f0ede8; --tx2: #a0a09a;
-        --bd1: rgba(255,255,255,0.12); --bd2: rgba(255,255,255,0.26);
-      }
-    }
-    body { font-family: var(--font); background: var(--bg3); color: var(--tx1); min-height: 100vh; padding: 1.5rem; }
-    .wrap { max-width: 980px; margin: 0 auto; }
-    .sr-only { position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0,0,0,0); }
-
-    /* Header */
-    .hdr { background:#1a3a6b; border-radius:var(--rlg); padding:.9rem 1.4rem; display:flex; align-items:center; justify-content:space-between; margin-bottom:1rem; }
-    .hdr-title { color:#fff; font-size:15px; font-weight:500; }
-    .hdr-sub { color:#c8d8f4; font-size:11px; margin-top:2px; }
-    .badge { background:#c9a84c; color:#2a1a00; font-size:11px; font-weight:500; padding:4px 12px; border-radius:var(--rmd); }
-
-    /* Status */
-    .status-card { background:var(--bg1); border:0.5px solid var(--bd1); border-radius:var(--rlg); padding:.8rem 1.25rem; margin-bottom:1rem; display:flex; align-items:center; gap:10px; flex-wrap:wrap; }
-    .status-txt { font-size:12px; color:var(--tx2); flex:1; }
-    .btn-reload { background:#1a3a6b; color:#fff; border:none; border-radius:var(--rmd); padding:6px 16px; font-size:12px; cursor:pointer; display:flex; align-items:center; gap:6px; }
-    .btn-reload:hover { background:#12295a; }
-    .spin { display:inline-block; animation:spin 1s linear infinite; }
-    @keyframes spin { to { transform:rotate(360deg); } }
-
-    /* Meta inputs */
-    .meta-section { background:var(--bg1); border:0.5px solid var(--bd1); border-radius:var(--rlg); padding:.9rem 1.25rem; margin-bottom:1rem; }
-    .meta-title { font-size:13px; font-weight:500; color:var(--tx1); margin-bottom:.6rem; display:flex; align-items:center; gap:6px; }
-    .meta-grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(160px,1fr)); gap:10px; margin-bottom:.75rem; }
-    .meta-item label { font-size:11px; color:var(--tx2); display:block; margin-bottom:3px; }
-    .meta-item input { width:100%; font-size:12px; padding:5px 8px; border:0.5px solid var(--bd2); border-radius:var(--rmd); background:var(--bg1); color:var(--tx1); }
-    .meta-item input[readonly] { opacity:.55; cursor:not-allowed; }
-    .btn-save { background:transparent; border:0.5px solid var(--bd2); border-radius:var(--rmd); padding:6px 16px; font-size:12px; cursor:pointer; color:var(--tx1); }
-    .btn-save:hover { background:var(--bg2); }
-
-    /* Gauges */
-    .gauges { display:grid; grid-template-columns:repeat(auto-fit,minmax(200px,1fr)); gap:12px; margin-bottom:1rem; }
-    .g-card { background:var(--bg1); border:0.5px solid var(--bd1); border-radius:var(--rlg); padding:.9rem; display:flex; flex-direction:column; align-items:center; gap:6px; }
-    .g-label { font-size:13px; font-weight:500; color:var(--tx1); text-align:center; }
-    .g-filter { width:100%; }
-    .g-filter select { width:100%; font-size:12px; padding:4px 6px; border:0.5px solid var(--bd2); border-radius:var(--rmd); background:var(--bg1); color:var(--tx1); }
-    .g-wrap { position:relative; width:180px; height:106px; }
-    .g-center { position:absolute; bottom:0; left:0; right:0; text-align:center; }
-    .g-pct { font-size:23px; font-weight:500; color:var(--tx1); }
-    .g-sub { font-size:11px; color:var(--tx2); }
-    .g-counts { font-size:12px; color:var(--tx2); text-align:center; }
-    .g-goal { font-size:11px; color:#b87e00; font-weight:500; }
-
-    /* Tabs */
-    .tabs-card { background:var(--bg1); border:0.5px solid var(--bd1); border-radius:var(--rlg); padding:1rem 1.25rem; }
-    .tabs { display:flex; gap:4px; border-bottom:0.5px solid var(--bd1); margin-bottom:.85rem; }
-    .tab { font-size:13px; padding:7px 14px; cursor:pointer; color:var(--tx2); border:none; border-bottom:2px solid transparent; margin-bottom:-0.5px; background:none; }
-    .tab.active { color:#1a3a6b; border-bottom:2px solid #1a3a6b; font-weight:500; }
-    .panel { display:none; }
-    .panel.active { display:block; }
-
-    /* Table */
-    .t-wrap { overflow-x:auto; }
-    table { width:100%; border-collapse:collapse; font-size:13px; }
-    th { text-align:left; padding:7px 10px; background:var(--bg2); color:var(--tx2); font-weight:500; border-bottom:0.5px solid var(--bd1); }
-    td { padding:7px 10px; border-bottom:0.5px solid var(--bd1); color:var(--tx1); }
-    tr:last-child td { border-bottom:none; }
-    .pill { display:inline-block; padding:3px 10px; border-radius:99px; font-size:11px; font-weight:500; }
-    .p-green { background:#eaf3de; color:#27500a; }
-    .p-amber { background:#faeeda; color:#633806; }
-    .p-red { background:#fcebeb; color:#501313; }
-    .p-gray { background:var(--bg2); color:var(--tx2); }
-
-    /* Chart */
-    .legend-row { display:flex; flex-wrap:wrap; gap:10px; margin-bottom:8px; }
-    .l-item { display:flex; align-items:center; gap:4px; font-size:12px; color:var(--tx2); }
-    .l-dot { width:10px; height:10px; border-radius:2px; flex-shrink:0; }
-    .chart-wrap { position:relative; width:100%; }
-
-    .snap-info { font-size:11px; color:var(--tx2); margin-top:.5rem; }
-    .empty-msg { text-align:center; padding:1.5rem 0; color:var(--tx2); }
-  </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>CPA — Painel de Participação | UniCatólica 2026.2</title>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@2.44.0/tabler-icons.min.css">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{--purple:#6b21a8;--purple-light:#f3e8ff;--purple-mid:#a855f7;--gold:#c9a84c;--gold-light:#fef9ee;--teal:#0d9488;--teal-light:#f0fdfa;--coral:#e05a2b;--coral-light:#fff1ec;--green:#16a34a;--green-light:#f0fdf4;--bg:#faf9f8;--bg2:#f2f0ed;--bg3:#e8e5e0;--tx1:#1c1917;--tx2:#57534e;--tx3:#a8a29e;--bd:rgba(0,0,0,.10);--bd2:rgba(0,0,0,.20);--radius:14px;--rs:8px;--font:system-ui,-apple-system,sans-serif}
+@media (prefers-color-scheme:dark){:root{--purple-light:#2e1065;--gold-light:#1c1200;--teal-light:#042f2e;--coral-light:#2c0f06;--green-light:#052e16;--bg:#151412;--bg2:#1e1c1a;--bg3:#282420;--tx1:#fafaf9;--tx2:#a8a29e;--tx3:#78716c;--bd:rgba(255,255,255,.10);--bd2:rgba(255,255,255,.20)}}
+body{font-family:var(--font);background:var(--bg);color:var(--tx1);min-height:100vh}
+.hdr{background:linear-gradient(135deg,#4c1d95 0%,#6b21a8 50%,#7c3aed 100%);padding:1.5rem 2rem;position:relative;overflow:hidden}
+.hdr::before{content:'';position:absolute;inset:0;background:radial-gradient(ellipse at 80% 50%,rgba(251,191,36,.15) 0%,transparent 60%),radial-gradient(ellipse at 20% 80%,rgba(20,184,166,.15) 0%,transparent 50%)}
+.hdr-inner{position:relative;max-width:1100px;margin:0 auto;display:flex;align-items:center;justify-content:space-between;gap:1rem;flex-wrap:wrap}
+.hdr-left{display:flex;align-items:center;gap:1rem}
+.hdr-icon{width:48px;height:48px;background:rgba(255,255,255,.15);border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:22px;color:#fff;border:1px solid rgba(255,255,255,.25)}
+.hdr-title{color:#fff;font-size:18px;font-weight:500}
+.hdr-sub{color:rgba(255,255,255,.75);font-size:12px;margin-top:2px}
+.hdr-badges{display:flex;flex-direction:column;align-items:flex-end;gap:6px}
+.badge-cpa{background:rgba(255,255,255,.15);color:#fff;font-size:11px;font-weight:500;padding:4px 12px;border-radius:99px;border:1px solid rgba(255,255,255,.25)}
+.badge-ciclo{background:var(--gold);color:#2a1a00;font-size:12px;font-weight:600;padding:4px 14px;border-radius:99px}
+.wrap{max-width:1100px;margin:0 auto;padding:1.5rem}
+.card{background:var(--bg2);border:.5px solid var(--bd);border-radius:var(--radius);padding:1rem 1.25rem;margin-bottom:1.25rem}
+.status-bar{display:flex;align-items:center;gap:10px;flex-wrap:wrap;padding:.65rem 1rem}
+.status-txt{font-size:12px;color:var(--tx2);flex:1;min-width:200px}
+.btn{border:.5px solid var(--bd2);border-radius:var(--rs);padding:6px 14px;font-size:12px;cursor:pointer;background:transparent;color:var(--tx1);display:inline-flex;align-items:center;gap:5px}
+.btn:hover{background:var(--bg3)}
+.btn-primary{background:var(--purple);color:#fff;border-color:var(--purple)}
+.btn-primary:hover{background:#5b1a98}
+.btn-gold{background:var(--gold);color:#2a1a00;border-color:var(--gold)}
+.notice{display:none;align-items:center;gap:10px;flex-wrap:wrap;background:var(--gold-light);border:.5px solid #c9a84c88;border-radius:var(--rs);padding:.65rem 1rem;margin-bottom:1.25rem;font-size:12px;color:#92400e}
+.notice.saved{background:var(--green-light);border-color:#16a34a55;color:var(--green)}
+.notice span{flex:1;min-width:220px}
+.section-label{font-size:11px;font-weight:500;color:var(--tx3);text-transform:uppercase;letter-spacing:.06em;margin-bottom:.65rem;display:flex;align-items:center;gap:5px}
+.meta-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px;margin-bottom:.75rem}
+.meta-item label{font-size:11px;color:var(--tx2);display:block;margin-bottom:3px}
+.meta-item input{width:100%;font-size:13px;padding:6px 9px;border:.5px solid var(--bd2);border-radius:var(--rs);background:var(--bg);color:var(--tx1)}
+.meta-item input[readonly]{opacity:.6;cursor:not-allowed}
+.hint{font-size:11px;color:var(--tx3)}
+.gauges{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:14px;margin-bottom:1.25rem}
+.g-card{background:var(--bg2);border:.5px solid var(--bd);border-radius:var(--radius);padding:1.1rem;display:flex;flex-direction:column;align-items:center;gap:8px;position:relative;overflow:hidden}
+.g-card::before{content:'';position:absolute;top:0;left:0;right:0;height:3px}
+.g-card.adm::before{background:linear-gradient(90deg,var(--teal),#14b8a6)}
+.g-card.doc::before{background:linear-gradient(90deg,var(--purple),var(--purple-mid))}
+.g-card.dis::before{background:linear-gradient(90deg,var(--gold),#f59e0b)}
+.g-head{display:flex;align-items:center;gap:8px;width:100%}
+.g-icon{width:36px;height:36px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:18px}
+.g-icon.adm{background:var(--teal-light);color:var(--teal)}
+.g-icon.doc{background:var(--purple-light);color:var(--purple)}
+.g-icon.dis{background:var(--gold-light);color:#92400e}
+.g-label{font-size:13px;font-weight:500}
+.g-filter{width:100%}
+.g-filter select{width:100%;font-size:12px;padding:5px 8px;border:.5px solid var(--bd2);border-radius:var(--rs);background:var(--bg);color:var(--tx1)}
+.g-wrap{position:relative;width:190px;height:112px}
+.g-center{position:absolute;bottom:2px;left:0;right:0;text-align:center}
+.g-pct{font-size:26px;font-weight:500}
+.g-sub{font-size:11px;color:var(--tx3)}
+.g-counts{font-size:12px;color:var(--tx2);text-align:center}
+.g-goal{font-size:11px;color:#92400e;font-weight:500;background:var(--gold-light);padding:2px 10px;border-radius:99px}
+.tabs{display:flex;gap:2px;border-bottom:.5px solid var(--bd);margin-bottom:1rem;flex-wrap:wrap}
+.tab{font-size:13px;padding:7px 14px;cursor:pointer;color:var(--tx2);border:none;border-bottom:2px solid transparent;margin-bottom:-.5px;background:none}
+.tab:hover{color:var(--tx1)}
+.tab.active{color:var(--purple);border-bottom:2px solid var(--purple);font-weight:500}
+.panel{display:none}
+.panel.active{display:block}
+.t-wrap{overflow-x:auto}
+table{width:100%;border-collapse:collapse;font-size:13px}
+th{text-align:left;padding:8px 12px;background:var(--bg3);color:var(--tx2);font-weight:500;border-bottom:.5px solid var(--bd);font-size:12px}
+td{padding:8px 12px;border-bottom:.5px solid var(--bd)}
+tr:last-child td{border-bottom:none}
+.pill{display:inline-flex;align-items:center;gap:4px;padding:3px 10px;border-radius:99px;font-size:11px;font-weight:500}
+.p-green{background:var(--green-light);color:var(--green)}
+.p-amber{background:var(--gold-light);color:#92400e}
+.p-red{background:var(--coral-light);color:var(--coral)}
+.p-gray{background:var(--bg3);color:var(--tx2)}
+.prog-wrap{width:100%;height:6px;background:var(--bg3);border-radius:99px;overflow:hidden}
+.prog-bar{height:100%;border-radius:99px}
+.legend-row{display:flex;flex-wrap:wrap;gap:10px;margin-bottom:10px}
+.l-item{display:flex;align-items:center;gap:4px;font-size:12px;color:var(--tx2)}
+.l-dot{width:10px;height:10px;border-radius:3px}
+.empty-msg{text-align:center;padding:2rem 0;color:var(--tx3);font-size:13px}
+details summary{cursor:pointer;font-size:13px;font-weight:500;color:var(--tx2);list-style:none;display:flex;align-items:center;gap:6px}
+details summary::-webkit-details-marker{display:none}
+.diag-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:12px;margin-top:1rem}
+.diag-box{background:var(--bg);border:.5px solid var(--bd);border-radius:var(--rs);padding:.8rem 1rem;font-size:12px;line-height:1.7}
+.diag-box h4{font-size:13px;font-weight:500;margin-bottom:4px;display:flex;align-items:center;gap:6px}
+.ok{color:var(--green)}.err{color:var(--coral)}
+.mono{font-family:ui-monospace,Menlo,monospace;font-size:11px;color:var(--tx2);word-break:break-all}
+.local-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:10px;margin:.75rem 0}
+.local-grid label{font-size:11px;color:var(--tx2);display:block;margin-bottom:3px}
+.local-grid input{font-size:11px;width:100%}
+</style>
 </head>
 <body>
+<div class="hdr"><div class="hdr-inner">
+  <div class="hdr-left">
+    <div class="hdr-icon"><i class="ti ti-chart-line"></i></div>
+    <div><div class="hdr-title">CPA — Autoavaliação Institucional</div><div class="hdr-sub">Centro Universitário Católica do Tocantins</div></div>
+  </div>
+  <div class="hdr-badges"><span class="badge-ciclo">2026.2</span><span class="badge-cpa">Painel de Participação</span></div>
+</div></div>
+
 <div class="wrap">
-  <h1 class="sr-only">Painel CPA UniCatólica — Participação na Autoavaliação Institucional</h1>
-
-  <div class="hdr">
-    <div>
-      <div class="hdr-title"><i class="ti ti-chart-line" aria-hidden="true"></i> CPA — Autoavaliação Institucional</div>
-      <div class="hdr-sub">Centro Universitário Católica do Tocantins &nbsp;|&nbsp; Ciclo 2026</div>
-    </div>
-    <span class="badge">Painel de Participação</span>
-  </div>
-
-  <div class="status-card">
-    <i class="ti ti-database" aria-hidden="true" style="font-size:18px;color:#1a3a6b;flex-shrink:0;"></i>
+  <div class="card status-bar">
+    <i class="ti ti-database" style="font-size:16px;color:var(--purple)"></i>
     <span class="status-txt" id="statusTxt">Carregando dados...</span>
-    <button class="btn-reload" onclick="loadAll()">
-      <i class="ti ti-refresh" id="reloadIcon" aria-hidden="true"></i> Atualizar
-    </button>
+    <button class="btn btn-primary" onclick="loadFromGithub()"><i class="ti ti-refresh"></i> Atualizar</button>
+    <button class="btn" onclick="downloadHist()"><i class="ti ti-download"></i> Baixar historico.json</button>
   </div>
 
-  <div class="meta-section">
-    <div class="meta-title"><i class="ti ti-target" aria-hidden="true"></i> Universo e metas (ciclo anterior)</div>
+  <div class="notice" id="histNotice">
+    <i class="ti ti-info-circle" style="font-size:16px"></i>
+    <span id="histNoticeTxt"></span>
+    <button class="btn btn-gold" id="histNoticeBtn" onclick="downloadHist()"><i class="ti ti-download"></i> Baixar historico.json</button>
+  </div>
+
+  <div class="card">
+    <div class="section-label"><i class="ti ti-target"></i> Universo e metas (ciclo anterior)</div>
     <div class="meta-grid">
-      <div class="meta-item"><label>Total administrativos</label><input type="number" id="totalAdmin" placeholder="ex: 105" min="0"></div>
-      <div class="meta-item"><label>Meta administrativos %</label><input type="number" id="metaAdmin" placeholder="ex: 95.0" step="0.1"></div>
-      <div class="meta-item"><label>Total docentes</label><input type="number" id="totalDocente" placeholder="ex: 98" min="0"></div>
-      <div class="meta-item"><label>Meta docentes %</label><input type="number" id="metaDocente" placeholder="ex: 95.0" step="0.1"></div>
-      <div class="meta-item"><label>Total discentes (2026/1)</label><input type="number" id="totalDiscente" value="2390" readonly></div>
-      <div class="meta-item"><label>Meta discentes %</label><input type="number" id="metaDiscente" placeholder="ex: 55.0" step="0.1"></div>
+      <div class="meta-item"><label>Total administrativos</label><input type="number" id="totalAdmin" value="109"></div>
+      <div class="meta-item"><label>Meta administrativos %</label><input type="number" id="metaAdmin" value="82.9" step="0.1"></div>
+      <div class="meta-item"><label>Total docentes</label><input type="number" id="totalDocente" value="100"></div>
+      <div class="meta-item"><label>Meta docentes %</label><input type="number" id="metaDocente" value="91.5" step="0.1"></div>
+      <div class="meta-item"><label>Total discentes (calculado da base)</label><input type="number" id="totalDiscente" value="0" readonly></div>
+      <div class="meta-item"><label>Meta discentes %</label><input type="number" id="metaDiscente" value="52.0" step="0.1"></div>
     </div>
-    <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap;">
-      <button class="btn-save" onclick="saveMetas()"><i class="ti ti-device-floppy" aria-hidden="true"></i> Salvar metas</button>
-      <span style="font-size:11px;color:var(--tx2);" id="metaStatus"></span>
+    <div style="display:flex;gap:10px;align-items:center;flex-wrap:wrap">
+      <button class="btn btn-primary" onclick="rebuildAll()"><i class="ti ti-check"></i> Aplicar metas</button>
+      <span class="hint">O total de discentes é a soma dos alunos únicos da base (responderam + em aberto).</span>
     </div>
   </div>
 
   <div class="gauges">
-    <div class="g-card">
-      <div class="g-label"><i class="ti ti-building" aria-hidden="true"></i> Administrativos</div>
-      <div class="g-wrap"><canvas id="gAdmin" width="180" height="106" role="img" aria-label="Velocímetro administrativos"></canvas>
-        <div class="g-center"><div class="g-pct" id="pAdmin">—</div><div class="g-sub">participação</div></div></div>
-      <div class="g-counts" id="cAdmin">— de — respondentes</div>
-      <div class="g-goal" id="goAdmin">Meta: informar acima</div>
+    <div class="g-card adm">
+      <div class="g-head"><div class="g-icon adm"><i class="ti ti-building"></i></div><span class="g-label">Administrativos</span></div>
+      <div class="g-wrap"><canvas id="gAdmin" width="190" height="112"></canvas><div class="g-center"><div class="g-pct" id="pAdmin">—</div><div class="g-sub">participação</div></div></div>
+      <div class="g-counts" id="cAdmin">—</div><div class="g-goal" id="goAdmin"></div>
     </div>
-    <div class="g-card">
-      <div class="g-label"><i class="ti ti-school" aria-hidden="true"></i> Docentes</div>
-      <div class="g-filter"><select id="selDocente" onchange="filterGauge('Docente')"><option value="">Todos os cursos</option></select></div>
-      <div class="g-wrap"><canvas id="gDocente" width="180" height="106" role="img" aria-label="Velocímetro docentes"></canvas>
-        <div class="g-center"><div class="g-pct" id="pDocente">—</div><div class="g-sub">participação</div></div></div>
-      <div class="g-counts" id="cDocente">— de — respondentes</div>
-      <div class="g-goal" id="goDocente">Meta: informar acima</div>
+    <div class="g-card doc">
+      <div class="g-head"><div class="g-icon doc"><i class="ti ti-school"></i></div><span class="g-label">Docentes</span></div>
+      <div class="g-filter"><select id="selDocente" onchange="rebuildGauges()"><option value="">Todos os cursos</option></select></div>
+      <div class="g-wrap"><canvas id="gDocente" width="190" height="112"></canvas><div class="g-center"><div class="g-pct" id="pDocente">—</div><div class="g-sub">participação</div></div></div>
+      <div class="g-counts" id="cDocente">—</div><div class="g-goal" id="goDocente"></div>
     </div>
-    <div class="g-card">
-      <div class="g-label"><i class="ti ti-users" aria-hidden="true"></i> Discentes</div>
-      <div class="g-filter"><select id="selDiscente" onchange="filterGauge('Discente')"><option value="">Todos os cursos</option></select></div>
-      <div class="g-wrap"><canvas id="gDiscente" width="180" height="106" role="img" aria-label="Velocímetro discentes"></canvas>
-        <div class="g-center"><div class="g-pct" id="pDiscente">—</div><div class="g-sub">participação</div></div></div>
-      <div class="g-counts" id="cDiscente">— de — respondentes</div>
-      <div class="g-goal" id="goDiscente">Meta: informar acima</div>
+    <div class="g-card dis">
+      <div class="g-head"><div class="g-icon dis"><i class="ti ti-users"></i></div><span class="g-label">Discentes</span></div>
+      <div class="g-filter"><select id="selDiscente" onchange="rebuildGauges()"><option value="">Todos os cursos</option></select></div>
+      <div class="g-wrap"><canvas id="gDiscente" width="190" height="112"></canvas><div class="g-center"><div class="g-pct" id="pDiscente">—</div><div class="g-sub">participação</div></div></div>
+      <div class="g-counts" id="cDiscente">—</div><div class="g-goal" id="goDiscente"></div>
     </div>
   </div>
 
-  <div class="tabs-card">
+  <div class="card">
     <div class="tabs">
-      <button class="tab active" onclick="switchTab('tResumo',this)">Resumo geral</button>
-      <button class="tab" onclick="switchTab('tDocCurso',this)">Docentes por curso</button>
-      <button class="tab" onclick="switchTab('tDisCurso',this)">Discentes por curso</button>
-      <button class="tab" onclick="switchTab('tEvolDoc',this)">Evolução docentes</button>
-      <button class="tab" onclick="switchTab('tEvolDis',this)">Evolução discentes</button>
+      <button class="tab active" onclick="switchTab('tResumo',this)"><i class="ti ti-layout-list"></i> Resumo geral</button>
+      <button class="tab" onclick="switchTab('tDocCurso',this)"><i class="ti ti-school"></i> Docentes por curso</button>
+      <button class="tab" onclick="switchTab('tDisCurso',this)"><i class="ti ti-users"></i> Discentes por curso</button>
+      <button class="tab" onclick="switchTab('tEvolGeral',this)"><i class="ti ti-chart-line"></i> Evolução geral</button>
+      <button class="tab" onclick="switchTab('tEvolDoc',this)"><i class="ti ti-chart-line"></i> Evolução docentes</button>
+      <button class="tab" onclick="switchTab('tEvolDis',this)"><i class="ti ti-chart-line"></i> Evolução discentes</button>
     </div>
+    <div id="tResumo" class="panel active"><div class="t-wrap"><table>
+      <thead><tr><th>Grupo</th><th>Respondentes</th><th>Total</th><th>Progresso</th><th>% atual</th><th>Meta</th><th>Status</th></tr></thead>
+      <tbody id="bResumo"><tr><td colspan="7" class="empty-msg">Carregando...</td></tr></tbody></table></div>
+      <div class="hint" id="snapInfo" style="margin-top:.75rem"></div></div>
+    <div id="tDocCurso" class="panel"><div class="t-wrap"><table>
+      <thead><tr><th>Curso</th><th>Respondentes</th><th>Docentes na base</th><th>Progresso</th><th>%</th></tr></thead>
+      <tbody id="bDocCurso"></tbody></table></div>
+      <div class="hint" style="margin-top:.5rem">Um docente que atua em mais de um curso é contado em cada curso, por isso a soma pode passar do total geral.</div></div>
+    <div id="tDisCurso" class="panel"><div class="t-wrap"><table>
+      <thead><tr><th>Curso</th><th>Respondentes</th><th>Alunos na base</th><th>Progresso</th><th>%</th></tr></thead>
+      <tbody id="bDisCurso"></tbody></table></div></div>
+    <div id="tEvolGeral" class="panel"><div class="legend-row" id="legGeral"></div><div style="position:relative;height:320px"><canvas id="chGeral"></canvas></div></div>
+    <div id="tEvolDoc" class="panel"><div class="legend-row" id="legDoc"></div><div style="position:relative;height:320px"><canvas id="chDoc"></canvas></div></div>
+    <div id="tEvolDis" class="panel"><div class="legend-row" id="legDis"></div><div style="position:relative;height:320px"><canvas id="chDis"></canvas></div></div>
+  </div>
 
-    <div id="tResumo" class="panel active">
-      <div class="t-wrap"><table>
-        <thead><tr><th>Grupo</th><th>Respondentes</th><th>Total esperado</th><th>% atual</th><th>Meta</th><th>Status</th></tr></thead>
-        <tbody id="bResumo"><tr><td colspan="6" class="empty-msg">Carregando...</td></tr></tbody>
-      </table></div>
-      <div class="snap-info" id="snapInfo"></div>
-    </div>
-
-    <div id="tDocCurso" class="panel">
-      <div class="t-wrap"><table>
-        <thead><tr><th>Curso</th><th>Respondentes únicos</th></tr></thead>
-        <tbody id="bDocCurso"><tr><td colspan="2" class="empty-msg">Sem dados.</td></tr></tbody>
-      </table></div>
-    </div>
-
-    <div id="tDisCurso" class="panel">
-      <div class="t-wrap"><table>
-        <thead><tr><th>Curso</th><th>Respondentes</th><th>Matriculados</th><th>%</th></tr></thead>
-        <tbody id="bDisCurso"><tr><td colspan="4" class="empty-msg">Sem dados.</td></tr></tbody>
-      </table></div>
-    </div>
-
-    <div id="tEvolDoc" class="panel">
-      <div class="legend-row" id="legDoc"></div>
-      <div class="chart-wrap" style="height:300px;"><canvas id="chDoc" role="img" aria-label="Evolução participação docentes por curso"></canvas></div>
-    </div>
-
-    <div id="tEvolDis" class="panel">
-      <div class="legend-row" id="legDis"></div>
-      <div class="chart-wrap" style="height:300px;"><canvas id="chDis" role="img" aria-label="Evolução participação discentes por curso"></canvas></div>
-    </div>
+  <div class="card">
+    <details id="diagDetails">
+      <summary><i class="ti ti-stethoscope"></i> Diagnóstico da leitura dos arquivos</summary>
+      <div class="diag-grid" id="diagGrid"><div class="diag-box">Nenhuma leitura ainda.</div></div>
+      <div style="margin-top:1rem;border-top:.5px solid var(--bd);padding-top:1rem">
+        <div class="section-label"><i class="ti ti-upload"></i> Testar com arquivos do computador</div>
+        <div class="hint">Use para conferir os números sem depender do GitHub. Nada é enviado para a internet.</div>
+        <div class="local-grid">
+          <div><label>administrativos.xlsx</label><input type="file" id="lAdmin" accept=".xlsx,.xls,.csv"></div>
+          <div><label>docente.csv</label><input type="file" id="lDoc" accept=".csv,.txt,.xlsx"></div>
+          <div><label>discente.csv</label><input type="file" id="lDis" accept=".csv,.txt,.xlsx"></div>
+        </div>
+        <button class="btn" onclick="loadFromLocal()"><i class="ti ti-player-play"></i> Processar arquivos locais</button>
+      </div>
+    </details>
   </div>
 </div>
 
@@ -201,371 +198,320 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js"></script>
 <script>
-// ── Constantes ────────────────────────────────────────────────
-const COLORS = ['#1a3a6b','#c9a84c','#1a7a3a','#c0392b','#7b2d8b','#0e7c91','#d35400','#16a085','#8e44ad','#2980b9','#f39c12','#2c3e50'];
-const MAT = {
-  'Administração':88,'Agronomia':160,'Arquitetura e Urbanismo':144,
-  'Biomedicina':67,'Ciências Contábeis':96,'Direito':740,
-  'Enfermagem':226,'Engenharia Civil':28,'Engenharia de Software':183,
-  'Engenharia Elétrica':5,'Farmácia':32,'Inteligência Artificial':14,
-  'Medicina Veterinária':249,'Psicologia':282,'Terapia Ocupacional':61,'Zootecnia':15
-};
-const TOTAL_MAT = Object.values(MAT).reduce((a,b)=>a+b,0);
-const LS_KEY = 'cpa_unic_metas';
-const LS_SNAP = 'cpa_unic_snaps';
+const COLORS=['#6b21a8','#c9a84c','#0d9488','#e05a2b','#2563eb','#16a34a','#db2777','#ea580c','#0891b2','#7c3aed','#65a30d','#dc2626','#9333ea','#0f766e','#b45309','#be123c'];
+const FILES={admin:'dados/administrativos.xlsx',doc:'dados/docente.csv',dis:'dados/discente.csv',hist:'dados/historico.json'};
+let snap=null,snaps=[],repoHist=[],charts={};
+const isoLocal=v=>{const d=v?new Date(v):new Date();return(isNaN(d)?new Date():d).toLocaleDateString('sv-SE')};
+const fmtDate=s=>s.split('-').reverse().join('/');
+const sameCounts=(a,b)=>a&&b&&a.admin===b.admin&&a.docente===b.docente&&a.discente===b.discente;
 
-// ── Estado ────────────────────────────────────────────────────
-let metas = { admin:0, docente:0, discente:0 };
-let totais = { admin:0, docente:0 };
-let snap = null;      // snapshot atual
-let snaps = [];       // histórico de snapshots
-let charts = {};
+const norm=s=>String(s??'').replace(/^\uFEFF/,'').trim().toUpperCase().normalize('NFD').replace(/[\u0300-\u036f]/g,'').replace(/\s+/g,' ');
+const cleanCurso=s=>String(s??'').trim().replace(/\s+/g,' ');
 
-// ── Init ──────────────────────────────────────────────────────
-window.addEventListener('DOMContentLoaded', () => {
-  loadMetasLS();
-  loadSnapsLS();
-  drawGauge('Admin',0,0); drawGauge('Docente',0,0); drawGauge('Discente',0,0);
-  loadAll();
-});
+window.addEventListener('DOMContentLoaded',()=>loadFromGithub());
 
-// ── LocalStorage: metas e snapshots ──────────────────────────
-function loadMetasLS() {
-  try {
-    const m = JSON.parse(localStorage.getItem(LS_KEY));
-    if (!m) return;
-    metas = m.metas || metas;
-    totais = m.totais || totais;
-    document.getElementById('metaAdmin').value  = metas.admin  || '';
-    document.getElementById('metaDocente').value= metas.docente|| '';
-    document.getElementById('metaDiscente').value=metas.discente||'';
-    document.getElementById('totalAdmin').value = totais.admin || '';
-    document.getElementById('totalDocente').value=totais.docente||'';
-  } catch(e) {}
+function setStatus(m){document.getElementById('statusTxt').textContent=m}
+
+function decode(buf){
+  try{return{txt:new TextDecoder('utf-8',{fatal:true}).decode(buf),enc:'UTF-8'}}
+  catch(e){return{txt:new TextDecoder('windows-1252').decode(buf),enc:'Windows-1252'}}
 }
 
-function saveMetas() {
-  metas.admin   = parseFloat(document.getElementById('metaAdmin').value)  || 0;
-  metas.docente = parseFloat(document.getElementById('metaDocente').value) || 0;
-  metas.discente= parseFloat(document.getElementById('metaDiscente').value)|| 0;
-  totais.admin  = parseInt(document.getElementById('totalAdmin').value)    || 0;
-  totais.docente= parseInt(document.getElementById('totalDocente').value)  || 0;
-  try { localStorage.setItem(LS_KEY, JSON.stringify({metas, totais})); } catch(e) {}
-  document.getElementById('metaStatus').textContent = 'Salvo ✓';
-  setTimeout(()=>document.getElementById('metaStatus').textContent='', 2000);
-  rebuildAll();
-}
-
-function loadSnapsLS() {
-  try { snaps = JSON.parse(localStorage.getItem(LS_SNAP)) || []; } catch(e) { snaps = []; }
-}
-
-function saveSnapsLS() {
-  try { localStorage.setItem(LS_SNAP, JSON.stringify(snaps)); } catch(e) {}
-}
-
-// ── Carregar arquivos do repositório ─────────────────────────
-async function loadAll() {
-  setStatus('Carregando arquivos...', true);
-  const today = new Date().toISOString().slice(0,10);
-  const newSnap = { date: today, admin:0, docente:0, discente:0, docByCurso:{}, disByCurso:{} };
-  let loaded = 0;
-
-  const jobs = [
-    fetchFile('dados/administrativos.xlsx').then(r => {
-      if (!r) return;
-      newSnap.admin = r.data.length;
-      loaded++;
-    }),
-    fetchFile('dados/docente.csv').then(r => {
-      if (!r) return;
-      // col G = índice 6 (avaliador), col L = índice 11 (flag respondeu)
-      const {filtered, idCol, cursoCol} = processReport(r, 6, null, 11);
-      newSnap.docente = countUniq(filtered, idCol);
-      newSnap.docByCurso = cursoCol ? groupByCurso(filtered, idCol, cursoCol) : {};
-      loaded++;
-    }),
-    fetchFile('dados/discente.csv').then(r => {
-      if (!r) return;
-      // col I = índice 8 (avaliador), col K = índice 10 (curso), col N = índice 13 (flag)
-      const {filtered, idCol, cursoCol} = processReport(r, 8, 10, 13);
-      newSnap.discente = countUniq(filtered, idCol);
-      newSnap.disByCurso = cursoCol ? groupByCurso(filtered, idCol, cursoCol) : {};
-      loaded++;
-    }),
-  ];
-
-  await Promise.allSettled(jobs);
-
-  if (loaded === 0) {
-    setStatus('Nenhum arquivo encontrado em /dados/. Verifique o repositório.', false);
-    return;
+function parseBuffer(buf,name){
+  const ext=name.split('.').pop().toLowerCase();
+  if(ext==='xlsx'||ext==='xls'){
+    const wb=XLSX.read(buf,{type:'array'});
+    const ws=wb.Sheets[wb.SheetNames[0]];
+    const rows=XLSX.utils.sheet_to_json(ws,{header:1,defval:''});
+    const fields=(rows[0]||[]).map((h,i)=>h!==''?String(h).trim():'col'+i);
+    const data=rows.slice(1).filter(r=>r.some(v=>String(v).trim()!=='')).map(r=>{const o={};fields.forEach((f,i)=>o[f]=r[i]!=null?String(r[i]).trim():'');return o});
+    return{data,fields,enc:'XLSX',delim:'—'};
   }
-
-  // salva/atualiza snapshot do dia
-  const idx = snaps.findIndex(s => s.date === today);
-  if (idx >= 0) snaps[idx] = newSnap; else snaps.push(newSnap);
-  snaps.sort((a,b) => a.date.localeCompare(b.date));
-  saveSnapsLS();
-  snap = newSnap;
-
-  rebuildAll();
-  const d = new Date().toLocaleString('pt-BR');
-  setStatus(`Dados atualizados em ${d} — ${loaded} arquivo(s) carregado(s).`, false);
+  const d=decode(buf);
+  const p=Papa.parse(d.txt,{header:true,skipEmptyLines:true,delimitersToGuess:[';','\t',',','|'],transformHeader:h=>h.replace(/^\uFEFF/,'').trim()});
+  return{data:p.data,fields:p.meta.fields||[],enc:d.enc,delim:p.meta.delimiter==='\t'?'TAB':p.meta.delimiter};
 }
 
-// ── Fetch helpers ─────────────────────────────────────────────
-async function fetchCSV(path) {
-  try {
-    const res = await fetch(path);
-    if (!res.ok) return null;
-    const txt = await res.text();
-    const enc = detectMojibake(txt) ? await refetchLatin(path) : txt;
-    const p = Papa.parse(enc, { header:true, skipEmptyLines:true });
-    return { data: p.data, fields: p.meta.fields || [] };
-  } catch(e) { return null; }
+function findCol(fields,name){const t=norm(name);return fields.find(f=>norm(f)===t)||null}
+
+function isRespondeu(v){
+  const x=norm(v);
+  if(!x)return false;
+  if(x.includes('ABERTO')||x.includes('PENDENTE')||x.startsWith('NAO'))return false;
+  return true;
 }
 
-async function refetchLatin(path) {
-  const res = await fetch(path);
-  const buf = await res.arrayBuffer();
-  return new TextDecoder('windows-1252').decode(buf);
-}
-
-function detectMojibake(txt) {
-  return /\uFFFD|[\xC3][\x80-\xBF]/.test(txt.slice(0,500));
-}
-
-async function fetchFile(path) {
-  // tenta CSV direto
-  const r = await fetchCSV(path);
-  if (r) return r;
-  // tenta XLS/XLSX variante
-  for (const ext of ['.xlsx','.xls']) {
-    try {
-      const res = await fetch(path.replace('.csv', ext));
-      if (!res.ok) continue;
-      const buf = await res.arrayBuffer();
-      const wb = XLSX.read(buf, { type:'array', codepage:1252 });
-      const ws = wb.Sheets[wb.SheetNames[0]];
-      const rows = XLSX.utils.sheet_to_json(ws, { header:1, defval:'' });
-      const fields = (rows[0]||[]).map((h,i) => h ? String(h).trim() : 'col'+i);
-      const data = rows.slice(1).map(r => {
-        const o={}; fields.forEach((f,i)=>o[f]=r[i]!=null?String(r[i]).trim():''); return o;
-      }).filter(r=>Object.values(r).some(v=>v));
-      return { data, fields };
-    } catch(e) {}
-  }
-  return null;
-}
-
-// ── Processamento de relatórios ───────────────────────────────
-function processReport(r, idIdx, cursoIdx, flagIdx) {
-  const fields = r.fields;
-  const idCol    = fields[idIdx]    || fields[0];
-  const cursoCol = cursoIdx != null ? (fields[cursoIdx] || null) : null;
-  const flagCol  = fields[flagIdx]  || null;
-  const filtered = flagCol
-    ? r.data.filter(row => isRespondeu(row[flagCol]))
-    : r.data;
-  return { filtered, idCol, cursoCol };
-}
-
-function isRespondeu(val) {
-  if (val == null) return false;
-  const v = String(val).trim().toLowerCase();
-  if (v === '') return false;
-  return !['não','nao','n','no','false','0','pendente','não respondeu','nao respondeu'].includes(v);
-}
-
-function countUniq(rows, col) {
-  const s = new Set();
-  rows.forEach(r => { const v=String(r[col]||'').trim(); if(v) s.add(v); });
-  return s.size;
-}
-
-function groupByCurso(rows, idCol, cursoCol) {
-  const map = {};
-  rows.forEach(r => {
-    const id = String(r[idCol]||'').trim();
-    const curso = String(r[cursoCol]||'').trim();
-    if (!id||!curso) return;
-    if (!map[curso]) map[curso] = new Set();
-    map[curso].add(id);
+function processLong(r){
+  const idCol=findCol(r.fields,'AVALIADOR'),stCol=findCol(r.fields,'STATUS'),cuCol=findCol(r.fields,'CURSO');
+  const res={cols:{AVALIADOR:idCol,STATUS:stCol,CURSO:cuCol},statusCounts:{},rows:r.data.length,universe:0,resp:0,respByCurso:{},totalByCurso:{},error:null};
+  if(!idCol||!stCol){res.error='Colunas AVALIADOR/STATUS não encontradas';return res}
+  const all=new Set(),ok=new Set(),tb={},rb={};
+  r.data.forEach(row=>{
+    const id=String(row[idCol]??'').trim();if(!id)return;
+    const st=String(row[stCol]??'').trim();
+    res.statusCounts[st||'(vazio)']=(res.statusCounts[st||'(vazio)']||0)+1;
+    all.add(id);
+    const c=cuCol?cleanCurso(row[cuCol]):'';
+    if(c){(tb[c]=tb[c]||new Set()).add(id)}
+    if(isRespondeu(st)){ok.add(id);if(c)(rb[c]=rb[c]||new Set()).add(id)}
   });
-  const out = {};
-  Object.entries(map).forEach(([c,s]) => out[c] = s.size);
-  return out;
+  res.universe=all.size;res.resp=ok.size;
+  Object.entries(tb).forEach(([c,s])=>res.totalByCurso[c]=s.size);
+  Object.entries(rb).forEach(([c,s])=>res.respByCurso[c]=s.size);
+  return res;
 }
 
-// ── Rebuild UI ────────────────────────────────────────────────
-function rebuildAll() {
-  if (!snap) return;
-  // lê metas atuais dos inputs
-  metas.admin   = parseFloat(document.getElementById('metaAdmin').value)  || 0;
-  metas.docente = parseFloat(document.getElementById('metaDocente').value) || 0;
-  metas.discente= parseFloat(document.getElementById('metaDiscente').value)|| 0;
-  totais.admin  = parseInt(document.getElementById('totalAdmin').value)    || 0;
-  totais.docente= parseInt(document.getElementById('totalDocente').value)  || 0;
-
-  updateGauge('Admin',   snap.admin,    totais.admin,   metas.admin);
-  updateGauge('Docente', snap.docente,  totais.docente, metas.docente);
-  updateGauge('Discente',snap.discente, TOTAL_MAT,      metas.discente);
-
-  fillFilter('selDocente',  Object.keys(snap.docByCurso).sort());
-  fillFilter('selDiscente', Object.keys(snap.disByCurso).sort());
-
-  buildResumo();
-  buildDocCurso();
-  buildDisCurso();
-  buildEvolChart('Doc', 'docByCurso', 'legDoc', 'chDoc');
-  buildEvolChart('Dis', 'disByCurso', 'legDis', 'chDis');
-
-  document.getElementById('snapInfo').textContent =
-    snaps.length > 0 ? 'Histórico: ' + snaps.map(s=>s.date).join(' · ') : '';
+function processAdmin(r){
+  const comp=findCol(r.fields,'Completion time');
+  const valid=comp?r.data.filter(x=>String(x[comp]??'').trim()!==''):r.data;
+  return{rows:r.data.length,resp:valid.length,cols:{'Completion time':comp},error:null};
 }
 
-// ── Gauge ─────────────────────────────────────────────────────
-function drawGauge(id, pct, meta) {
-  const c = document.getElementById('g'+id);
-  if (!c) return;
-  const ctx=c.getContext('2d'), W=c.width, H=c.height, cx=W/2, cy=H-10, r=76;
-  ctx.clearRect(0,0,W,H);
-  const dark = matchMedia('(prefers-color-scheme:dark)').matches;
-  const arc=(from,to,color,lw)=>{ctx.beginPath();ctx.arc(cx,cy,r,from,to);ctx.strokeStyle=color;ctx.lineWidth=lw;ctx.lineCap='round';ctx.stroke();};
-  arc(Math.PI,0, dark?'#2a3550':'#e8edf5', 13);
-  if(meta>0){const mA=Math.PI+(meta/100)*Math.PI;arc(Math.PI,mA,'#c9a84c55',13);}
-  if(pct>0){const p=Math.min(pct,100)/100;const fA=Math.PI+p*Math.PI;const fc=pct>=(meta||101)?'#1a7a3a':pct>=(meta||101)*.75?'#c9a84c':'#c0392b';arc(Math.PI,fA,fc,13);}
-  if(meta>0){const mA=Math.PI+(meta/100)*Math.PI;ctx.beginPath();ctx.moveTo(cx+(r-8)*Math.cos(mA),cy+(r-8)*Math.sin(mA));ctx.lineTo(cx+(r+2)*Math.cos(mA),cy+(r+2)*Math.sin(mA));ctx.strokeStyle='#c9a84c';ctx.lineWidth=2;ctx.stroke();}
-  ctx.font='9px sans-serif';ctx.fillStyle=dark?'#a0aabf':'#888';
-  ctx.textAlign='left';ctx.fillText('0%',cx-r-2,cy+11);ctx.textAlign='right';ctx.fillText('100%',cx+r+2,cy+11);
+async function getGithubBuf(path){
+  try{
+    const res=await fetch(path+'?nc='+Date.now(),{cache:'no-store'});
+    if(!res.ok)return{error:'HTTP '+res.status+' — arquivo não encontrado em '+path};
+    return{buf:await res.arrayBuffer(),name:path,lm:res.headers.get('Last-Modified')};
+  }catch(e){return{error:'Não foi possível acessar '+path+'. Abra o painel pelo link https://…github.io/… ('+e.message+')'}}
 }
 
-function updateGauge(id, resp, total, meta) {
-  const pct = total>0?(resp/total)*100:0;
-  const pEl=document.getElementById('p'+id);
-  const cEl=document.getElementById('c'+id);
-  const gEl=document.getElementById('go'+id);
-  pEl.textContent = total>0?pct.toFixed(1)+'%':'—';
-  pEl.style.color = total>0?(pct>=meta&&meta>0?'#1a7a3a':pct>=(meta||0)*.75&&meta>0?'#b87e00':'#c0392b'):'var(--tx1)';
-  cEl.textContent = (resp>0||total>0)?(resp+' de '+(total||'?')+' respondentes'):'— de — respondentes';
-  gEl.textContent = meta>0?'Meta: superar '+meta.toFixed(1)+'% (ciclo ant.)':'Meta: informar acima';
-  drawGauge(id, pct, meta);
+async function getRepoHist(){
+  try{
+    const res=await fetch(FILES.hist+'?nc='+Date.now(),{cache:'no-store'});
+    if(res.status===404)return{list:[],info:'Ainda não existe no repositório. Baixe o historico.json e suba na pasta dados/.'};
+    if(!res.ok)return{list:[],error:'HTTP '+res.status};
+    const j=await res.json();
+    const list=(Array.isArray(j)?j:(j.snapshots||[])).filter(x=>x&&x.date);
+    return{list,info:list.length+' carga(s) no repositório: '+list.map(x=>fmtDate(x.date)).join(', ')};
+  }catch(e){return{list:[],error:'historico.json inválido ou inacessível ('+e.message+')'}}
 }
 
-function filterGauge(tipo) {
-  if (!snap) return;
-  const curso = document.getElementById('sel'+tipo).value;
-  if (tipo==='Docente') {
-    const resp = curso?(snap.docByCurso[curso]||0):snap.docente;
-    updateGauge('Docente', resp, curso?0:totais.docente, curso?0:metas.docente);
-    if (curso){document.getElementById('pDocente').textContent=resp+' resp.';document.getElementById('pDocente').style.color='var(--tx1)';}
-  } else {
-    const resp = curso?(snap.disByCurso[curso]||0):snap.discente;
-    const total = curso?(MAT[curso]||0):TOTAL_MAT;
-    updateGauge('Discente', resp, total, curso?0:metas.discente);
+function downloadHist(){
+  if(!snaps.length){alert('Ainda não há cargas para exportar.');return}
+  const blob=new Blob([JSON.stringify({ciclo:'2026.2',atualizado:new Date().toISOString(),snapshots:snaps},null,1)],{type:'application/json'});
+  const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download='historico.json';
+  document.body.appendChild(a);a.click();a.remove();
+  document.getElementById('histNoticeTxt').textContent='Arquivo baixado. Agora suba o historico.json na pasta dados/ do GitHub (substituindo o anterior) para que todos vejam este ponto.';
+}
+
+function showNotice(pending,date){
+  const n=document.getElementById('histNotice'),t=document.getElementById('histNoticeTxt'),b=document.getElementById('histNoticeBtn');
+  n.style.display='flex';
+  if(pending){n.classList.remove('saved');b.style.display='inline-flex';
+    t.textContent='A carga de '+fmtDate(date)+' ainda não está no histórico compartilhado. Baixe o historico.json e suba na pasta dados/ do GitHub.';
+  }else{n.classList.add('saved');b.style.display='none';
+    t.textContent='Histórico compartilhado em dia: a carga de '+fmtDate(date)+' já está registrada no repositório.';}
+}
+
+async function getLocalBuf(inputId){
+  const f=document.getElementById(inputId).files[0];
+  if(!f)return{error:'Nenhum arquivo selecionado'};
+  return{buf:await f.arrayBuffer(),name:f.name,lm:f.lastModified};
+}
+
+async function loadFromGithub(){
+  if(location.protocol==='file:'){
+    setStatus('Painel aberto direto do computador: a leitura automática só funciona pelo link do GitHub Pages. Para testar aqui, use "Testar com arquivos do computador" abaixo.');
+    document.getElementById('diagDetails').open=true;return;
   }
+  setStatus('Carregando arquivos do repositório...');
+  const [h,a,d,s]=await Promise.all([getRepoHist(),getGithubBuf(FILES.admin),getGithubBuf(FILES.doc),getGithubBuf(FILES.dis)]);
+  repoHist=h.list;
+  await runPipeline([a,d,s],'GitHub',h);
 }
 
-function fillFilter(selId, cursos) {
-  const sel=document.getElementById(selId);
-  const prev=sel.value;
-  sel.innerHTML='<option value="">Todos os cursos</option>';
-  cursos.forEach(c=>{const o=document.createElement('option');o.value=c;o.textContent=c;sel.appendChild(o);});
-  if(prev) sel.value=prev;
+async function loadFromLocal(){
+  setStatus('Processando arquivos locais...');
+  await runPipeline(await Promise.all([getLocalBuf('lAdmin'),getLocalBuf('lDoc'),getLocalBuf('lDis')]),'arquivos locais',{list:repoHist,info:'Teste local, usando o histórico já carregado ('+repoHist.length+' cargas).'});
 }
 
-// ── Tabelas ───────────────────────────────────────────────────
-function buildResumo() {
-  const rows=[
-    {g:'Administrativos', r:snap.admin,    t:totais.admin,   m:metas.admin},
-    {g:'Docentes',        r:snap.docente,  t:totais.docente, m:metas.docente},
-    {g:'Discentes',       r:snap.discente, t:TOTAL_MAT,      m:metas.discente},
-  ];
-  document.getElementById('bResumo').innerHTML=rows.map(x=>{
-    const pct=x.t>0?(x.r/x.t*100):null;
-    const ps=pct!=null?pct.toFixed(1)+'%':'—';
-    const ms=x.m>0?x.m.toFixed(1)+'%':'—';
-    let pill='<span class="pill p-gray">Sem meta</span>';
-    if(pct!=null&&x.m>0){
-      if(pct>=x.m) pill='<span class="pill p-green">Meta atingida</span>';
-      else if(pct>=x.m*.75) pill='<span class="pill p-amber">Em andamento</span>';
-      else pill='<span class="pill p-red">Abaixo da meta</span>';
-    } else if(pct==null) pill='<span class="pill p-gray">Sem dados</span>';
-    return `<tr><td>${x.g}</td><td>${x.r||'—'}</td><td>${x.t||'—'}</td><td>${ps}</td><td>${ms}</td><td>${pill}</td></tr>`;
+async function runPipeline([bA,bD,bS],origem,hist){
+  const diag={};
+  const today=isoLocal(bS.lm||bD.lm||bA.lm);
+  const ns={date:today,admin:0,docente:0,docUniverse:0,discente:0,disUniverse:0,docByCurso:{},docTotalByCurso:{},disByCurso:{},disTotalByCurso:{}};
+  let loaded=0;
+
+  const step=(b,key,fn)=>{
+    if(b.error){diag[key]={error:b.error};return null}
+    try{
+      const r=parseBuffer(b.buf,b.name);
+      const out=fn(r);
+      diag[key]={file:b.name,bytes:b.buf.byteLength,enc:r.enc,delim:r.delim,fields:r.fields,...out};
+      if(!out.error)loaded++;
+      return out.error?null:out;
+    }catch(e){diag[key]={error:'Erro ao ler: '+e.message};return null}
+  };
+
+  const a=step(bA,'Administrativos',processAdmin);
+  if(a)ns.admin=a.resp;
+  const d=step(bD,'Docentes',processLong);
+  if(d){ns.docente=d.resp;ns.docUniverse=d.universe;ns.docByCurso=d.respByCurso;ns.docTotalByCurso=d.totalByCurso}
+  const s=step(bS,'Discentes',processLong);
+  if(s){ns.discente=s.resp;ns.disUniverse=s.universe;ns.disByCurso=s.respByCurso;ns.disTotalByCurso=s.totalByCurso}
+
+  diag['Histórico']={hist:true,...hist};
+  renderDiag(diag);
+  if(loaded===0){setStatus('Nenhum arquivo foi lido. Abra o diagnóstico abaixo para ver o motivo.');document.getElementById('diagDetails').open=true;return}
+
+  const list=hist.list.slice().sort((x,y)=>x.date.localeCompare(y.date));
+  const i=list.findIndex(x=>x.date===ns.date);
+  const last=list[list.length-1];
+  let pending;
+  if(i>=0){pending=!sameCounts(list[i],ns);list[i]=ns}
+  else if(last&&sameCounts(last,ns)){pending=false}
+  else if(last&&ns.date<last.date){pending=false}
+  else{list.push(ns);pending=true}
+  list.sort((x,y)=>x.date.localeCompare(y.date));
+  snaps=list;snap=ns;
+  rebuildAll();
+  showNotice(pending,ns.date);
+  const falhas=Object.entries(diag).filter(([k,v])=>v.error&&!v.hist).map(([k])=>k);
+  setStatus('Dados de '+fmtDate(ns.date)+' carregados via '+origem+' — '+loaded+' de 3 arquivos lidos'+(falhas.length?' (falha: '+falhas.join(', ')+')':'')+'.');
+  if(falhas.length)document.getElementById('diagDetails').open=true;
+}
+
+function renderDiag(diag){
+  document.getElementById('diagGrid').innerHTML=Object.entries(diag).map(([k,v])=>{
+    if(v.hist)return`<div class="diag-box"><h4><i class="ti ${v.error?'ti-alert-triangle err':'ti-history ok'}"></i>Histórico (historico.json)</h4>${v.error?'<span class="err">'+v.error+'</span>':v.info}</div>`;
+    if(v.error&&!v.file)return`<div class="diag-box"><h4><i class="ti ti-alert-triangle err"></i>${k}</h4><span class="err">${v.error}</span></div>`;
+    const cols=Object.entries(v.cols||{}).map(([n,c])=>`${n}: ${c?'<span class="ok">encontrada</span>':'<span class="err">não encontrada</span>'}`).join('<br>');
+    const st=v.statusCounts?Object.entries(v.statusCounts).map(([n,c])=>`${n}: ${c.toLocaleString('pt-BR')} linhas`).join('<br>'):'';
+    return`<div class="diag-box"><h4><i class="ti ${v.error?'ti-alert-triangle err':'ti-circle-check ok'}"></i>${k}</h4>
+      Arquivo: ${v.file} (${(v.bytes/1024).toFixed(0)} KB)<br>
+      Encoding: ${v.enc} · Delimitador: ${v.delim}<br>
+      Linhas de dados: ${v.rows.toLocaleString('pt-BR')}<br>
+      ${cols}<br>
+      ${st?'<strong>Valores de STATUS</strong><br>'+st+'<br>':''}
+      ${v.universe!=null?'Avaliadores únicos na base: <strong>'+v.universe+'</strong><br>':''}
+      Respondentes únicos: <strong>${v.resp??'—'}</strong>
+      ${v.error?'<br><span class="err">'+v.error+'</span>':''}
+      <div class="mono" style="margin-top:6px">Colunas lidas: ${(v.fields||[]).join(' | ')}</div></div>`;
   }).join('');
 }
 
-function buildDocCurso() {
-  const keys=Object.keys(snap.docByCurso).sort();
-  document.getElementById('bDocCurso').innerHTML=keys.length===0
-    ?'<tr><td colspan="2" class="empty-msg">Sem dados de curso nos docentes.</td></tr>'
-    :keys.map(c=>`<tr><td>${c}</td><td>${snap.docByCurso[c]}</td></tr>`).join('');
+function getMetas(){
+  const v=id=>parseFloat(document.getElementById(id).value)||0;
+  return{admin:{total:v('totalAdmin'),meta:v('metaAdmin')},docente:{total:v('totalDocente'),meta:v('metaDocente')},discente:{total:v('totalDiscente'),meta:v('metaDiscente')}};
 }
 
-function buildDisCurso() {
-  const keys=Object.keys(snap.disByCurso).sort();
-  document.getElementById('bDisCurso').innerHTML=keys.length===0
-    ?'<tr><td colspan="4" class="empty-msg">Sem dados.</td></tr>'
-    :keys.map(c=>{
-      const r=snap.disByCurso[c]||0;
-      const t=MAT[c]||0;
-      const pct=t>0?((r/t)*100).toFixed(1)+'%':'—';
-      return `<tr><td>${c}</td><td>${r}</td><td>${t||'—'}</td><td>${pct}</td></tr>`;
-    }).join('');
+function rebuildAll(){
+  if(!snap)return;
+  if(snap.disUniverse)document.getElementById('totalDiscente').value=snap.disUniverse;
+  fillFilter('selDocente',Object.keys(snap.docTotalByCurso||{}).sort());
+  fillFilter('selDiscente',Object.keys(snap.disTotalByCurso||{}).sort());
+  rebuildGauges();buildResumo();buildCursoTable('bDocCurso',snap.docByCurso,snap.docTotalByCurso,'#6b21a8');
+  buildCursoTable('bDisCurso',snap.disByCurso,snap.disTotalByCurso,'#c9a84c');
+  buildEvolGeral();
+  buildEvol('Doc','docByCurso','docTotalByCurso','legDoc','chDoc');
+  buildEvol('Dis','disByCurso','disTotalByCurso','legDis','chDis');
+  document.getElementById('snapInfo').textContent=snaps.length?'Cargas no histórico: '+snaps.map(x=>x.date.split('-').reverse().join('/')).join(' · '):'';
 }
 
-// ── Gráficos de evolução ──────────────────────────────────────
-function buildEvolChart(suf, snapKey, legId, canvasId) {
-  const labels = snaps.map(s=>s.date);
-  const allCursos = [...new Set(snaps.flatMap(s=>Object.keys(s[snapKey]||{})))].sort();
+function rebuildGauges(){
+  if(!snap)return;
+  const m=getMetas();
+  updateGauge('Admin',snap.admin,m.admin.total,m.admin.meta,'#0d9488');
+  const cd=document.getElementById('selDocente').value;
+  if(cd)updateGauge('Docente',snap.docByCurso[cd]||0,snap.docTotalByCurso[cd]||0,0,'#6b21a8');
+  else updateGauge('Docente',snap.docente,m.docente.total,m.docente.meta,'#6b21a8');
+  const cs=document.getElementById('selDiscente').value;
+  if(cs)updateGauge('Discente',snap.disByCurso[cs]||0,snap.disTotalByCurso[cs]||0,m.discente.meta,'#c9a84c');
+  else updateGauge('Discente',snap.discente,m.discente.total,m.discente.meta,'#c9a84c');
+}
 
-  document.getElementById(legId).innerHTML = allCursos.length===0
-    ?'<span style="font-size:11px;color:var(--tx2);">Nenhum dado de curso ainda.</span>'
-    :allCursos.map((c,i)=>`<span class="l-item"><span class="l-dot" style="background:${COLORS[i%COLORS.length]};"></span>${c}</span>`).join('');
-
-  if(charts[suf]){charts[suf].destroy();charts[suf]=null;}
-  if(labels.length===0||allCursos.length===0) return;
-
+function drawGauge(id,pct,meta,color){
+  const c=document.getElementById('g'+id);const ctx=c.getContext('2d');
+  const W=c.width,H=c.height,cx=W/2,cy=H-10,r=80;
+  ctx.clearRect(0,0,W,H);
   const dark=matchMedia('(prefers-color-scheme:dark)').matches;
-  const gc=dark?'rgba(255,255,255,0.07)':'rgba(0,0,0,0.07)';
-  const tc=dark?'#a0aabf':'#888';
-
-  charts[suf]=new Chart(document.getElementById(canvasId),{
-    type:'line',
-    data:{
-      labels,
-      datasets:allCursos.map((c,i)=>({
-        label:c,
-        data:snaps.map(s=>(s[snapKey]||{})[c]||0),
-        borderColor:COLORS[i%COLORS.length],
-        backgroundColor:COLORS[i%COLORS.length]+'22',
-        borderWidth:2,pointRadius:4,tension:.3,fill:false
-      }))
-    },
-    options:{
-      responsive:true,maintainAspectRatio:false,
-      plugins:{legend:{display:false}},
-      scales:{
-        x:{grid:{color:gc},ticks:{color:tc,font:{size:10}},title:{display:true,text:'Data',color:tc,font:{size:10}}},
-        y:{grid:{color:gc},ticks:{color:tc,font:{size:10}},title:{display:true,text:'Respondentes únicos',color:tc,font:{size:10}},beginAtZero:true}
-      }
-    }
-  });
+  const arc=(f,t,col)=>{ctx.beginPath();ctx.arc(cx,cy,r,f,t);ctx.strokeStyle=col;ctx.lineWidth=14;ctx.lineCap='round';ctx.stroke()};
+  arc(Math.PI,0,dark?'#2a2520':'#e8e5e0');
+  if(pct>0)arc(Math.PI,Math.PI+Math.min(pct,100)/100*Math.PI,color);
+  if(meta>0){const a=Math.PI+meta/100*Math.PI;ctx.beginPath();ctx.moveTo(cx+(r-10)*Math.cos(a),cy+(r-10)*Math.sin(a));ctx.lineTo(cx+(r+10)*Math.cos(a),cy+(r+10)*Math.sin(a));ctx.strokeStyle='#c9a84c';ctx.lineWidth=3;ctx.lineCap='round';ctx.stroke()}
+  ctx.font='9px sans-serif';ctx.fillStyle=dark?'#78716c':'#a8a29e';
+  ctx.textAlign='left';ctx.fillText('0%',cx-r-2,cy+12);ctx.textAlign='right';ctx.fillText('100%',cx+r+2,cy+12);
 }
 
-// ── Utils ─────────────────────────────────────────────────────
-function switchTab(id, btn) {
+function updateGauge(id,resp,total,meta,color){
+  const pct=total>0?resp/total*100:0;
+  const p=document.getElementById('p'+id);
+  p.textContent=total>0?pct.toFixed(1)+'%':'—';
+  p.style.color=total>0&&meta>0?(pct>=meta?'#16a34a':pct>=meta*.75?'#b45309':'#dc2626'):'var(--tx1)';
+  document.getElementById('c'+id).textContent=resp+' de '+(total||'?')+' respondentes';
+  const g=document.getElementById('go'+id);
+  g.textContent=meta>0?'Meta: superar '+meta.toFixed(1)+'%':'';g.style.display=meta>0?'inline-flex':'none';
+  drawGauge(id,pct,meta,color);
+}
+
+function fillFilter(id,list){
+  const s=document.getElementById(id),prev=s.value;
+  s.innerHTML='<option value="">Todos os cursos</option>'+list.map(c=>`<option value="${c}">${c}</option>`).join('');
+  if(list.includes(prev))s.value=prev;
+}
+
+const bar=(pct,col)=>`<div class="prog-wrap"><div class="prog-bar" style="width:${Math.min(pct,100).toFixed(1)}%;background:${col}"></div></div>`;
+
+function pill(pct,meta){
+  if(pct==null)return'<span class="pill p-gray">Sem dados</span>';
+  if(!meta)return'<span class="pill p-gray">Sem meta</span>';
+  if(pct>=meta)return'<span class="pill p-green"><i class="ti ti-check"></i> Meta atingida</span>';
+  if(pct>=meta*.75)return'<span class="pill p-amber"><i class="ti ti-clock"></i> Em andamento</span>';
+  return'<span class="pill p-red"><i class="ti ti-alert-triangle"></i> Abaixo da meta</span>';
+}
+
+function buildResumo(){
+  const m=getMetas();
+  const rows=[['Administrativos',snap.admin,m.admin.total,m.admin.meta,'#0d9488'],['Docentes',snap.docente,m.docente.total,m.docente.meta,'#6b21a8'],['Discentes',snap.discente,m.discente.total,m.discente.meta,'#c9a84c']];
+  document.getElementById('bResumo').innerHTML=rows.map(([g,r,t,mt,col])=>{
+    const pct=t>0?r/t*100:null;
+    return`<tr><td><strong>${g}</strong></td><td>${r}</td><td>${t||'—'}</td><td style="min-width:120px">${pct!=null?bar(pct,col):'—'}</td><td>${pct!=null?pct.toFixed(1)+'%':'—'}</td><td>${mt?mt.toFixed(1)+'%':'—'}</td><td>${pill(pct,mt)}</td></tr>`;
+  }).join('');
+}
+
+function buildCursoTable(tbody,resp,total,col){
+  const keys=Object.keys(total||{}).sort();
+  document.getElementById(tbody).innerHTML=keys.length===0?'<tr><td colspan="5" class="empty-msg">Sem dados de curso nesta base.</td></tr>':
+    keys.map(c=>{const r=resp[c]||0,t=total[c]||0,pct=t>0?r/t*100:0;
+      return`<tr><td>${c}</td><td>${r}</td><td>${t}</td><td style="min-width:110px">${bar(pct,col)}</td><td>${pct.toFixed(1)}%</td></tr>`}).join('');
+}
+
+function buildEvolGeral(){
+  const m=getMetas();
+  const labels=snaps.map(s=>s.date.split('-').reverse().slice(0,2).join('/'));
+  const series=[['Administrativos','#0d9488',s=>m.admin.total?s.admin/m.admin.total*100:null,m.admin.meta],
+    ['Docentes','#6b21a8',s=>m.docente.total?s.docente/m.docente.total*100:null,m.docente.meta],
+    ['Discentes','#c9a84c',s=>{const t=s.disUniverse||m.discente.total;return t?s.discente/t*100:null},m.discente.meta]];
+  document.getElementById('legGeral').innerHTML=series.map(([n,c])=>`<span class="l-item"><span class="l-dot" style="background:${c}"></span>${n}</span>`).join('')+'<span class="hint">Linhas tracejadas: metas</span>';
+  if(charts.Geral){charts.Geral.destroy();charts.Geral=null}
+  if(!snaps.length)return;
+  const ds=[];
+  series.forEach(([n,c,f,mt])=>{
+    ds.push({label:n,data:snaps.map(s=>{const v=f(s);return v==null?null:+v.toFixed(1)}),borderColor:c,backgroundColor:c,borderWidth:2.5,pointRadius:4,tension:.3,spanGaps:true});
+    if(mt)ds.push({label:'Meta '+n,data:snaps.map(()=>mt),borderColor:c,borderDash:[5,4],borderWidth:1,pointRadius:0});
+  });
+  const dark=matchMedia('(prefers-color-scheme:dark)').matches,gc=dark?'rgba(255,255,255,.06)':'rgba(0,0,0,.06)',tc=dark?'#78716c':'#a8a29e';
+  charts.Geral=new Chart(document.getElementById('chGeral'),{type:'line',data:{labels,datasets:ds},
+    options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false},tooltip:{mode:'index',intersect:false,callbacks:{label:x=>x.dataset.label+': '+x.parsed.y+'%'}}},
+      scales:{x:{grid:{display:false},ticks:{color:tc}},y:{min:0,max:100,grid:{color:gc},ticks:{color:tc,callback:v=>v+'%'},title:{display:true,text:'Participação (%)',color:tc}}}}});
+}
+
+function buildEvol(suf,kR,kT,legId,cvId){
+  const labels=snaps.map(s=>s.date.split('-').reverse().slice(0,2).join('/'));
+  const cursos=[...new Set(snaps.flatMap(s=>Object.keys(s[kT]||{})))].sort();
+  document.getElementById(legId).innerHTML=cursos.length?cursos.map((c,i)=>`<span class="l-item"><span class="l-dot" style="background:${COLORS[i%COLORS.length]}"></span>${c}</span>`).join(''):'<span class="hint">Sem dados de curso ainda.</span>';
+  if(charts[suf]){charts[suf].destroy();charts[suf]=null}
+  if(!cursos.length)return;
+  const dark=matchMedia('(prefers-color-scheme:dark)').matches,gc=dark?'rgba(255,255,255,.06)':'rgba(0,0,0,.06)',tc=dark?'#78716c':'#a8a29e';
+  charts[suf]=new Chart(document.getElementById(cvId),{type:'line',
+    data:{labels,datasets:cursos.map((c,i)=>({label:c,data:snaps.map(s=>{const t=(s[kT]||{})[c]||0,r=(s[kR]||{})[c]||0;return t?+(r/t*100).toFixed(1):null}),borderColor:COLORS[i%COLORS.length],backgroundColor:COLORS[i%COLORS.length],borderWidth:2,pointRadius:4,tension:.3,spanGaps:true}))},
+    options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false},tooltip:{mode:'index',intersect:false,callbacks:{label:x=>x.dataset.label+': '+x.parsed.y+'%'}}},
+      scales:{x:{grid:{display:false},ticks:{color:tc}},y:{min:0,max:100,grid:{color:gc},ticks:{color:tc,callback:v=>v+'%'},title:{display:true,text:'Participação (%)',color:tc}}}}});
+}
+
+function switchTab(id,btn){
   document.querySelectorAll('.panel').forEach(p=>p.classList.remove('active'));
   document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));
-  document.getElementById(id).classList.add('active');
-  btn.classList.add('active');
-}
-
-function setStatus(msg, loading) {
-  document.getElementById('statusTxt').textContent = msg;
-  const icon = document.getElementById('reloadIcon');
-  icon.className = loading ? 'spin' : 'ti ti-refresh';
+  document.getElementById(id).classList.add('active');btn.classList.add('active');
 }
 </script>
 </body>
