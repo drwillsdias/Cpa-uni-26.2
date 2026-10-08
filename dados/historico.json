@@ -1,6 +1,6 @@
 {
  "ciclo": "2026.2",
- "atualizado": "2026-10-06",
+ "atualizado": "2026-10-08T12:12:46.476Z",
  "snapshots": [
   {
    "date": "2026-09-24",
@@ -537,6 +537,84 @@
     "Medicina Veterinária": 252,
     "Psicologia": 288,
     "Terapia Ocupacional": 67,
+    "Zootecnia": 10
+   }
+  },
+  {
+   "date": "2026-10-08",
+   "admin": 67,
+   "docente": 70,
+   "docUniverse": 99,
+   "discente": 787,
+   "disUniverse": 2369,
+   "docByCurso": {
+    "Arquitetura e Urbanismo": 7,
+    "Direito": 9,
+    "Engenharia Civil": 6,
+    "Engenharia de Software": 9,
+    "Administração": 8,
+    "Agronomia": 11,
+    "Ciências Contábeis": 4,
+    "Medicina Veterinária": 12,
+    "Psicologia": 16,
+    "Zootecnia": 5,
+    "Biomedicina": 5,
+    "Enfermagem": 11,
+    "Farmácia": 4,
+    "Engenharia Elétrica": 2,
+    "Terapia Ocupacional": 5,
+    "Inteligência Artificial": 1
+   },
+   "docTotalByCurso": {
+    "Direito": 21,
+    "Arquitetura e Urbanismo": 11,
+    "Engenharia de Software": 15,
+    "Psicologia": 19,
+    "Inteligência Artificial": 3,
+    "Agronomia": 13,
+    "Zootecnia": 7,
+    "Medicina Veterinária": 15,
+    "Biomedicina": 7,
+    "Farmácia": 6,
+    "Engenharia Civil": 6,
+    "Administração": 8,
+    "Ciências Contábeis": 4,
+    "Enfermagem": 11,
+    "Engenharia Elétrica": 2,
+    "Terapia Ocupacional": 5
+   },
+   "disByCurso": {
+    "Terapia Ocupacional": 37,
+    "Enfermagem": 99,
+    "Engenharia de Software": 54,
+    "Psicologia": 98,
+    "Administração": 50,
+    "Medicina Veterinária": 138,
+    "Direito": 45,
+    "Ciências Contábeis": 56,
+    "Agronomia": 88,
+    "Arquitetura e Urbanismo": 44,
+    "Biomedicina": 54,
+    "Farmácia": 18,
+    "Inteligência Artificial": 2,
+    "Engenharia Civil": 2,
+    "Zootecnia": 2
+   },
+   "disTotalByCurso": {
+    "Direito": 738,
+    "Medicina Veterinária": 250,
+    "Farmácia": 37,
+    "Engenharia de Software": 200,
+    "Biomedicina": 62,
+    "Psicologia": 288,
+    "Agronomia": 140,
+    "Enfermagem": 236,
+    "Arquitetura e Urbanismo": 144,
+    "Inteligência Artificial": 15,
+    "Ciências Contábeis": 88,
+    "Terapia Ocupacional": 67,
+    "Administração": 82,
+    "Engenharia Civil": 15,
     "Zootecnia": 10
    }
   }
